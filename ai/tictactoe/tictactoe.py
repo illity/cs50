@@ -46,8 +46,7 @@ def result(board, action):
     """
     Returns the board that results from making move (i, j) on the board.
     """
-    board[action[0]][action[1]] = player(board)
-    return board
+    return [[board[i][j] if (i,j)!=action else player(board) for i in range(3)] for j in range(3)]
 
 
 def winner(board):
@@ -93,14 +92,46 @@ def minimax(board):
     """
     Returns the optimal action for the current player on the board.
     """
-    return random.choice(tuple(actions(board)))
+    bestAction = None   
+    goal = 2*('OX'.index(player(board)))-1
+    print(goal)
+    bestEvaluation = -goal
+    for action in actions(board):
+        evaluation = evaluate(result(board, action), -goal)
+        #objetivo 1
+        #evaluation 0
+        #bestEvaluation -1
+        print(evaluation)
+        if (goal == -1 and (evaluation - bestEvaluation < 0)) or\
+           (goal == 1 and (evaluation - bestEvaluation > 0)):
+            bestEvaluation = evaluation
+            bestAction = action
+    return bestAction
 
+def evaluate(board, goal = None):
+    # The evaluation of a board is defined to be the worst evaluation it can achieve
+    if goal is None: goal = 2*('OX'.index(player(board)))-1
+    if terminal(board): return utility(board)
+    bestEvaluation = -goal
+    for action in actions(board):
+        evaluation = evaluate(result(board, action), -goal)
+        if (goal == -1 and (evaluation - bestEvaluation < 0)) or\
+           (goal == 1 and (evaluation - bestEvaluation > 0)):
+            bestEvaluation = evaluation
+    return bestEvaluation
 
 if __name__ == '__main__':
     board = initial_state()
-    print(player(board))
+    # print(player(board))
     for i in range(9):
         board[i % 3][i//3] = 'X'
-    print(terminal(board))
+    # print(terminal(board))
     board = initial_state()
-    print(actions(board))
+    # print(actions(board))
+    #print(evaluate(board))
+    board[0][0] = 'X'
+    board[1][0] = 'X'
+    board[1][1] = 'O'
+    board[2][2] = 'O'
+    print(evaluate(board))
+    print(minimax(board))
