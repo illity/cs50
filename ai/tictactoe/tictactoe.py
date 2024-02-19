@@ -2,6 +2,7 @@
 Tic Tac Toe Player
 """
 
+import random
 import math
 
 X = "X"
@@ -25,8 +26,8 @@ def player(board):
     p = True
     for line in board:
         for cell in line:
-            p = p^(cell is EMPTY)
-    return "XO"[p%2]
+            p = p ^ (cell is EMPTY)
+    return "XO"[p % 2]
 
 
 def actions(board):
@@ -53,22 +54,22 @@ def winner(board):
     """
     Returns the winner of the game, if there is one.
     """
-    p = False
-    for line in board:
-        for cell in line:
-            p = p^(cell is EMPTY)
-    return "XO"[p%2]
-
+    for i in range(3):
+        if board[i][0] is not None and board[i][0] == board[i][1] == board[i][2]:
+            return board[i][0]
+        if board[0][i] is not None and board[0][i] == board[1][i] == board[2][i]:
+            return board[0][i]
+    if board[0][0] is not None and board[0][0] == board[1][1] == board[2][2]:
+        return board[0][0]
+    if board[0][2] is not None and board[0][2] == board[1][1] == board[2][0]:
+        return board[0][2]
+    return EMPTY
 
 def terminal(board):
     """
     Returns True if game is over, False otherwise.
     """
-    for i in range(3):
-        if board[i][0] is not None and board[i][0] == board[i][1] == board[i][2]: return True
-        if board[0][i] is not None and board[0][i] == board[1][i] == board[2][i]: return True
-    if board[0][0] is not None and board[0][0] == board[1][1] == board[2][2]: return True
-    if board[0][2] is not None and board[0][2] == board[1][1] == board[2][0]: return True
+    if winner(board): return True
     for line in board:
         for cell in line:
             if cell is EMPTY:
@@ -88,17 +89,18 @@ def utility(board):
     return dictionary[winner(board)]
 
 
-import random
 def minimax(board):
     """
     Returns the optimal action for the current player on the board.
     """
     return random.choice(tuple(actions(board)))
 
+
 if __name__ == '__main__':
     board = initial_state()
     print(player(board))
-    for i in range(9): board[i%3][i//3] = 'X'
+    for i in range(9):
+        board[i % 3][i//3] = 'X'
     print(terminal(board))
     board = initial_state()
     print(actions(board))
